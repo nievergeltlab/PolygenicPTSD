@@ -113,7 +113,7 @@ polygenicPTSD_multinom <- function(data_entry){
                                   #Add 55 based on nhaynes
                                   modelformula = paste(bp_outcome, "~ sex + P1 + P2 + P3 + age*",age_choice, "+", antihtn, ptsd, sign, prs, sep = "")
                                   modelname = paste(study, bp_outcome, prs, ptsd, model, effect,  pop, "age", age_choice, "gender", gender,  sep = "_")
-                                  assign(modelname, multinom(as.formula(modelformula), data=dat_gen), envir = .GlobalEnv)
+                                  assign(modelname, vglm(as.formula(modelformula), data=dat_gen,family=multinomial()), envir = .GlobalEnv)
                                   save(list = modelname, file=paste(modelname, ".RData", sep="_")) #Save model outputs as an R object
                                   #modelformula = paste(bp_outcome, "~ sex + P1 + P2 + P3 + age*",age_choice, "+", antihtn, ptsd, sign, prs, sep = "")
                                   #assign(paste(study, model, effect, bp_outcome, pop, "age", age_choice, "gender", gender, ptsd, prs,  sep = "_"), lm(as.formula(modelformula), data=dat_gen), envir = .GlobalEnv)
