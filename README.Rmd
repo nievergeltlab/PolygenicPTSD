@@ -34,7 +34,7 @@ This is a basic example which shows you how to run the analysis pipeline on simu
 #install.packages("nnet", "dplyr") #if you need to install
 library(polygenicPTSD)
 library(dplyr)
-library(nnet)
+library(VGAM)
 
 ## STEP 1a Load and merge
 ## Load and merge data (or see example simulated data included with our 
