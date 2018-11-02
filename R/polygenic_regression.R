@@ -46,7 +46,7 @@ polygenicPTSD <- function(model,dframe,pop="eur"){
         }
 
         modelname = paste(study, bp_outcome, prs_varname, ptsd, model, effect,  pop, "age", age_choice, "gender", gender, "covar",covar, sep = "_") 
-        
+        mouts <- vector("list", length(prs_vars))
         i=1
         for (prs in c(prs_vars)){ 
          modelformula = paste(bp_outcome, "~ sex + P1 + P2 + P3 + age*",age_choice, "+", antihtn, "+" ,covars, "+", ptsd, test_type, prs, sep = "")
@@ -57,7 +57,6 @@ polygenicPTSD <- function(model,dframe,pop="eur"){
          i = i+1
         }
         #Save model outputs as an R object
-        assign(modelname,vector("list", length(prs_vars))) 
         save(mouts,file=paste(modelname,'r',sep='.'))
         }
        }
