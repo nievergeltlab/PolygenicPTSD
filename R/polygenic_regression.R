@@ -9,7 +9,7 @@ polygenicPTSD <- function(model,dframe){
   prs_vars <- grep(prs_varname, colnames(dframe),value=TRUE)
   
   #First create list of PRS variables 
-  ptsd_vars <- colnames(data_entry[grepl("ptsd", colnames(dframe))]) #selecting the four ptsd variable names
+  ptsd_vars <- colnames(dframe[grepl("ptsd", colnames(dframe))]) #selecting the four ptsd variable names
   
   
   #I will stratify the data by ancestry prior to this step so we can just rerun AAM later on.
