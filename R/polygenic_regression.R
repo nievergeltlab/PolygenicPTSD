@@ -11,7 +11,7 @@ polygenicPTSD <- function(model,dframe,pop="eur"){
   #First create list of PRS variables 
   ptsd_vars <- colnames(dframe[grepl("ptsd", colnames(dframe))]) #selecting the four ptsd variable names
   
-  
+  print(ptsd_vars)
   #I will stratify the data by ancestry prior to this step so we can just rerun AAM later on.
 
 #Loop runs through PRS variables within the correct subset specified above based on outcome
@@ -27,12 +27,15 @@ polygenicPTSD <- function(model,dframe,pop="eur"){
       for (gender in c("all", "male", "female")){ #Loop subsets based on gender
        if (gender =="all"){
          dat_gen = dframe
+         sex= "+ sex"
        }
        if (gender =="male"){
-         dat_gen = dframe[grep(1, dframe$sex),]
+         dat_gen = subset(dframe,sex==1)
+         sex=" "
        }
        if (gender =="female"){
-         dat_gen = dframe[grep(0, dframe$sex),]
+         dat_gen = subset(dframe,sex==0)
+         sex=" "
        } #Will fail if there are no individuals of a given sex unless using trycatch. Maybe use the subset command when runnign the lm, and use that under try??
        
        #For the length of PRS, generate a list of object to store model results
@@ -49,12 +52,13 @@ polygenicPTSD <- function(model,dframe,pop="eur"){
         mouts <- vector("list", length(prs_vars))
         i=1
         for (prs in c(prs_vars)){ 
-         modelformula = paste(bp_outcome, "~ sex + P1 + P2 + P3 + age*",age_choice, "+", antihtn, "+" ,covars, "+", ptsd, test_type, prs, sep = "")
-         print(modeltype)
+         modelformula = paste(bp_outcome, "~  P1 + P2 + P3 ", sex, "+ age*",age_choice, "+", antihtn, "+" ,covars, "+", ptsd, test_type, prs, sep = "")
+         modeltype <- as.character(modeltype)
+         print(modelname)
          mouts[[i]] <- tryCatch(
-                        vglm(as.formula(modelformula), family = as.character(modeltype), data=dat_gen) # , envir = .GlobalEnv
+                        vglm(as.formula(modelformula), family = modeltype, data=dat_gen) # , envir = .GlobalEnv
                        ,error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
-          print(mouts[[i]])
+         
          i = i+1
           
         }
