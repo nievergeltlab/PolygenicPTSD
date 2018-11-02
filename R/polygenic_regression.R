@@ -54,9 +54,11 @@ polygenicPTSD <- function(model,dframe,pop="eur"){
          mouts[[i]] <- tryCatch(
                         vglm(as.formula(modelformula), family = modeltype, data=dat_gen) # , envir = .GlobalEnv
                        ,error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
+          print(mouts[[i]])
          i = i+1
+          
         }
-         print(modelname)
+         #print(modelname)
         #Save model outputs as an R object
         save(mouts,file=paste(modelname,'r',sep='.'))
         }
