@@ -48,7 +48,7 @@ polygenicPTSD <- function(model,dframe,pop="eur"){
           covars = "+ educ + trauma_count_lt"
         }
 
-        modelname = paste(study, bp_outcome, prs_varname, ptsd, effect,  pop, "age", age_choice, "gender", gender, "covar",covar, sep = ".") 
+        modelname = paste(study, pop, gender, bp_outcome, prs_varname, ptsd, effect,  "age", age_choice,  "covar",covar, sep = ".") 
         mouts <- vector("list", length(prs_vars))
         i=1
         for (prs in c(prs_vars)){ 
