@@ -12,7 +12,7 @@ You can install polygenicPTSD from github with:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("margarethannum/PolygenicPTSD")
+devtools::install_github("nievergeltlab/PolygenicPTSD")
 ```
 
 Example
@@ -26,6 +26,10 @@ This is a basic example which shows you how to run the analysis pipeline on simu
 library(polygenicPTSD)
 library(dplyr)
 library(VGAM)
+
+#This loads the different types of regression model parameters
+data("model_types") 
+
 
 ## STEP 1a Load and merge
 ## Load and merge data (or see example simulated data included with our 
@@ -78,13 +82,7 @@ prs_vars <- prsVars(classed) #makes object of PRS variables, divided by type of 
 #Each of the below uses functions from the polygenicPTSD package to run the required models for the continous and categorical outcomes.
 
 #Linear regression analysis for continuous outcomes (SBP & DBP)
-polygenicPTSD_contin(classed)
-
-#Logistic regression analysis for binary hypertension outcomes (non-hypertensive & hypertensive)
-polygenicPTSD_logit(classed)
-
-#Multinomial regression analysis for 3-level hypertension outcomes (normotensive, pre-hypertensive & hypertensive)
-polygenicPTSD_multinom(classed)
+polygenicPTSD(model_types[1,],data=classed)
 
 
 ## For any questions on documentation refer to full pipeline document 
