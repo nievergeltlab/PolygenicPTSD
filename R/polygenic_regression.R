@@ -50,7 +50,7 @@ polygenicPTSD <- function(model,dframe,pop="eur"){
         i=1
         for (prs in c(prs_vars)){ 
          modelformula = paste(bp_outcome, "~ sex + P1 + P2 + P3 + age*",age_choice, "+", antihtn, "+" ,covars, "+", ptsd, test_type, prs, sep = "")
-         
+         print(modeltype)
          mouts[[i]] <- tryCatch(
                         vglm(as.formula(modelformula), family = modeltype, data=dat_gen) # , envir = .GlobalEnv
                        ,error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
