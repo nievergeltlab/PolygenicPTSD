@@ -57,7 +57,7 @@ polygenicPTSD <- function(model,dframe){
          i = i+1
         }
         #Save model outputs as an R object
-        assign(modelname,vector("list", length(prs_vars)) 
+        assign(modelname,vector("list", length(prs_vars))) 
         save(mouts,file=paste(modelname,'r',sep='.'))
         }
        }
