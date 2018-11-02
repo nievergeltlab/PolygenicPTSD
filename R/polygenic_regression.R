@@ -1,4 +1,4 @@
-polygenicPTSD <- function(model,dframe,pop){
+polygenicPTSD <- function(model,dframe,pop="eur"){
 
   bp_outcome <- model[1]
   prs_varname <- model[2]
