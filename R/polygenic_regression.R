@@ -7,11 +7,12 @@ polygenicPTSD <- function(model,dframe,pop="eur"){
   
   #Get the columns related to PRS. They may be incorrectly ordered depending on R
   prs_vars <- grep(prs_varname, colnames(dframe),value=TRUE)
-  
+
+
   #First create list of PRS variables 
   ptsd_vars <- colnames(dframe[grepl("ptsd", colnames(dframe))]) #selecting the four ptsd variable names
   
-  print(ptsd_vars)
+  
   #I will stratify the data by ancestry prior to this step so we can just rerun AAM later on.
 
 #Loop runs through PRS variables within the correct subset specified above based on outcome
@@ -27,7 +28,12 @@ polygenicPTSD <- function(model,dframe,pop="eur"){
       for (gender in c("all", "male", "female")){ #Loop subsets based on gender
        if (gender =="all"){
          dat_gen = dframe
-         sex= "+ sex"
+         #But only add a sex covariate if there are really both sexes represented!
+         if(dim(subset(dframe,sex==1))[1] > 0 & dim(subset(dframe,sex==0))[1] > 0)
+         {
+          sex= "+ sex"
+         } 
+          else { sex=" "}
        }
        if (gender =="male"){
          dat_gen = subset(dframe,sex==1)
@@ -52,7 +58,8 @@ polygenicPTSD <- function(model,dframe,pop="eur"){
         mouts <- vector("list", length(prs_vars))
         i=1
         for (prs in c(prs_vars)){ 
-         modelformula = paste(bp_outcome, "~  P1 + P2 + P3 ", sex, "+ age*",age_choice, "+", antihtn, "+" ,covars, "+", ptsd, test_type, prs, sep = "")
+         modelformula = paste(bp_outcome, "~  P1 + P2 + P3 ", sex, "+ age*",age_choice, "+","+" ,covars, "+", ptsd, test_type, prs, sep = "") #'antihtn' is taken out for now, its not used in any model directly
+         print(modelformula)
          modeltype <- as.character(modeltype)
          print(modelname)
          mouts[[i]] <- tryCatch(
@@ -71,4 +78,3 @@ polygenicPTSD <- function(model,dframe,pop="eur"){
      }
     }
 }
-  
