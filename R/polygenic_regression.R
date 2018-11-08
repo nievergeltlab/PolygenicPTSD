@@ -2,7 +2,7 @@ polygenicPTSD <- function(model,dframe,pop="eur"){
 
   bp_outcome <- model[1]
   prs_varname <- model[2]
-  antihtn <- model[3]
+  #antihtn <- model[3]
   modeltype <- model[4]
   
   #Get the columns related to PRS. They may be incorrectly ordered depending on R
@@ -39,10 +39,10 @@ polygenicPTSD <- function(model,dframe,pop="eur"){
          dat_gen = subset(dframe,sex==1)
          sex=" "
        }
-       if (gender =="female"){
+       if (gender =="female" ){
          dat_gen = subset(dframe,sex==0)
          sex=" "
-       } #Will fail if there are no individuals of a given sex unless using trycatch. Maybe use the subset command when runnign the lm, and use that under try??
+       } 
        
        #For the length of PRS, generate a list of object to store model results
        for (covar in c("base", "adjust")){ #Loop does original base with sex, pcs, age, then adds extra covars
@@ -54,22 +54,27 @@ polygenicPTSD <- function(model,dframe,pop="eur"){
           covars = "+ educ + trauma_count_lt"
         }
 
-        modelname = paste(study, pop, gender, bp_outcome, prs_varname, ptsd, effect,  "age", age_choice,  "covar",covar, sep = ".") 
-        mouts <- vector("list", length(prs_vars))
-        i=1
-        for (prs in c(prs_vars)){ 
-         modelformula = paste(bp_outcome, "~  P1 + P2 + P3 ", sex, "+ age*",age_choice, "+","+" ,covars, "+", ptsd, test_type, prs, sep = "") #'antihtn' is taken out for now, its not used in any model directly
-         print(modelformula)
-         modeltype <- as.character(modeltype)
-         print(modelname)
-         mouts[[i]] <- tryCatch(
-                        vglm(as.formula(modelformula), family = modeltype, data=dat_gen) # , envir = .GlobalEnv
-                       ,error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
+        if(dim(dat_gen)[1] > 0) #Only do a sex stratified analysis if the data frame has subjects to analyze 
+        {
+         modelname = paste(study, pop, gender, bp_outcome, prs_varname, ptsd, effect,  "age", age_choice,  "covar",covar, sep = ".") 
+         mouts <- vector("list", length(prs_vars)+1)
          
-         i = i+1
+         i=1
+         for (prs in c(prs_vars)){ 
+          modelformula = paste(bp_outcome, "~  P1 + P2 + P3 ", sex, "+ age*",age_choice, "+","+" ,covars, "+", ptsd, test_type, prs, sep = "") #'antihtn' is taken out for now, its not used in any model directly
+
+          modeltype <- as.character(modeltype)
+          print(modelformula)
+          print(modelname)
+          mouts[[i]] <- tryCatch(
+                         summary(vglm(as.formula(modelformula), family = modeltype, data=dat_gen))@coef3 # , envir = .GlobalEnv
+                        ,error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
+                        
+          print(mouts[[i]])
+          i = i+1
+         } 
           
         }
-         #print(modelname)
         #Save model outputs as an R object
         save(mouts,file=paste(modelname,'r',sep='.'))
         }
