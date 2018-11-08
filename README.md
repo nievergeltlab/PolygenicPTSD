@@ -101,7 +101,7 @@ setwd("~/results/")
 #For now, PRS are based only on European ancestry data
 #So we'll subset the data to just that. Updates will come later for AAMs!
 
-classed_eur <- subset(classed$bestpop == "eur")
+classed_eur <- subset(classed,bestpop == "eur")
 #Regression analysis 
 
 polygenicPTSD(model_types[1,],data=classed_eur)
