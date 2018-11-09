@@ -17,7 +17,7 @@ polygenicPTSD <- function(model,dframe,pop="eur"){
 
 #Loop runs through PRS variables within the correct subset specified above based on outcome
    for (ptsd in c(ptsd_vars)){ #Loop runs through PTSD variables
-    for (test_type in c("*","+")){ #Loop runs through main effect/interaction
+    for (test_type in c("+","*")){ #Loop runs through main effect/interaction
      if (test_type == "+"){ #Define model name for file title (Main Effects model)
        effect = "ME"
      }
@@ -74,16 +74,23 @@ polygenicPTSD <- function(model,dframe,pop="eur"){
           modeltype <- as.character(modeltype)
           print(modelformula)
           print(modelname)
+          print(modeltype)
+          if(modeltype == "multinomial")
+          {
+           print('got it in')
+           modeltype2=multinomial(refLevel="0")
+          } else { modeltype2=modeltype}
           mouts[[i]] <- tryCatch(
-                         summary(vglm(as.formula(modelformula), family = modeltype, data=dat_gen))@coef3 # , envir = .GlobalEnv
+                         summary(vglm(as.formula(modelformula), family = modeltype2, data=dat_gen))@coef3 # , envir = .GlobalEnv # modeltype
                         ,error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
+                        print(mouts[[i]])
           if (test_type == "*"){ #If this is an interaction test, also do the keller model that has cov x e (PTSD) interactions as well as cov x G (PRS)
           
             modelformula2 = paste(bp_outcome, "~  (P1 + P2 + P3 ", sex, "+ age",agevar, covars, ")*", ptsd, "+ (P1 + P2 + P3 ", sex, "+ age",agevar, covars, "+", ptsd,")*", prs, sep = "")
                       mouts_keller[[i]] <- tryCatch(
-                         summary(vglm(as.formula(modelformula2), family = modeltype, data=dat_gen))@coef3 # , envir = .GlobalEnv
+                         summary(vglm(as.formula(modelformula2), family = modeltype2, data=dat_gen))@coef3 # , envir = .GlobalEnv
                         ,error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
-                        print(mouts_keller[[i]])
+                        
           }               
                         
           
