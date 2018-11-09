@@ -24,6 +24,7 @@ This is a basic example which shows you how to run the analysis pipeline on simu
 ##To user: Replace STUDYPI below with last name of Principle Investigator (For example "Sumner")
 study <- "StudyPI"
 
+
 #To user: if you need to install R packages, this is how:
 #install.packages("VGAM", "dplyr") 
 
@@ -49,12 +50,12 @@ study <- "StudyPI"
 #Note: Do not put PRS scores in your file manually! 
 #They will be merged into the data in a subsequent step
 
- d1 <-  read.csv('study_data.csv',header=T,stringsAsFactors=F)
+ d1 <-  read.csv('mrs_bp_sumner.csv',header=T,stringsAsFactors=F,na.strings=c(NA,"#N/A","-9"))
 
 #Merge polygenic risk scores with data itself
- sbp_prs <- read.table('sbp_prs_filename.txt',header=T,stringsAsFactors=F)
- dbp_prs <- read.table('dbp_prs_filename.txt',header=T,stringsAsFactors=F)
- htn_prs <- read.table('htn_prs_filename.txt',header=T,stringsAsFactors=F)
+ sbp_prs <- read.table('output/mrsc_sbpr.all.score_prs',header=T,stringsAsFactors=F)
+ dbp_prs <- read.table('output/mrsc_dbpr.all.score_prs',header=T,stringsAsFactors=F)
+ htn_prs <- read.table('output/mrsc_htnr.all.score_prs',header=T,stringsAsFactors=F)
 
  d1a <- merge(d1,sbp_prs,by=c("FID","IID"),all=TRUE)
  d1b <- merge(d1a,dbp_prs,by=c("FID","IID"),all=TRUE)
@@ -67,6 +68,7 @@ study <- "StudyPI"
 ## and ancestry (necessary for analysis)
 
 classed <- htn_outcome_classify(dat)
+table(classed$htn_aha_new)
 
 ## Create ancestry stratification indices
 
@@ -90,7 +92,7 @@ save(list = x, file=paste(x, ".RData", sep="_")) #Saves test outputs and conting
 ## Below functions all save output in working directory.
 ## We recommend you create a folder "results" and change your working directory to that location.
 
-setwd("~/results/")
+setwd("results/")
 
 
 ######################################################################
@@ -104,7 +106,18 @@ setwd("~/results/")
 classed_eur <- subset(classed,bestpop == "eur")
 #Regression analysis 
 
-polygenicPTSD(model_types[1,],data=classed_eur)
+#User:Please specify a comma delimited list of additional covariates, with quotations around the names. 
+#By default example, this will be education and lifetime trauma count
+#If you dont have these, just write: covars=NA
+#Be sure you spell the names correctly! Otherwise all covariates will be dropped from the model
+
+covars=c("educ","trauma_count_lt")
+
+
+for i in {1..8}
+do
+ polygenicPTSD(model_types[i,],dframe=classed_eur,pop="eur",covlist=covars)
+done
 
 
 ## For any questions on documentation refer to full pipeline document 
