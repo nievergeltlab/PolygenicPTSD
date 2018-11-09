@@ -114,10 +114,12 @@ classed_eur <- subset(classed,bestpop == "eur")
 covars=c("educ","trauma_count_lt")
 
 
-for i in {1..8}
-do
+
+
+for (i in c(1:8))
+{
  polygenicPTSD(model_types[i,],dframe=classed_eur,pop="eur",covlist=covars)
-done
+}
 
 
 ## For any questions on documentation refer to full pipeline document 
