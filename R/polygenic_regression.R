@@ -51,9 +51,8 @@ polygenicPTSD <- function(model,dframe,pop="eur",covlist=""){
         }
         #Make sure
         if (covar == "adjust" & !is.na(covlist)[1] & sum(grepl(paste(covlist,collapse="|"),names(dframe))) == length(covlist)){
-        print('in so far')
+
           covars=paste("+",paste(covlist,collapse="+"))
-         print(covars)
         } else {covars=""}
        
         #Make an age squared variable if the data choice was age squared...
