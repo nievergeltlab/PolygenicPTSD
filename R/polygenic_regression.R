@@ -1,4 +1,4 @@
-polygenicPTSD <- function(model,dframe,pop="eur"){
+polygenicPTSD <- function(model,dframe,pop="eur",covlist=""){
 
   bp_outcome <- model[1]
   prs_varname <- model[2]
@@ -45,14 +45,16 @@ polygenicPTSD <- function(model,dframe,pop="eur"){
        } 
        
        #For the length of PRS, generate a list of object to store model results
-       for (covar in c("base", "adjust")){ #Loop does original base with sex, pcs, age, then adds extra covars
+       for (covar in c("adjust","base" )){ #Loop does original base with sex, pcs, age, then adds extra covars
         if (covar == "base"){
           covars = ""
         }
-        #check if these covariates exist before perform this adjustment?
-        if (covar == "adjust"){
-          covars = "+ educ + trauma_count_lt"
-        }
+        #Make sure
+        if (covar == "adjust" & !is.na(covlist)[1] & sum(grepl(paste(covlist,collapse="|"),names(dframe))) == length(covlist)){
+        print('in so far')
+          covars=paste("+",paste(covlist,collapse="+"))
+         print(covars)
+        } else {covars=""}
        
         #Make an age squared variable if the data choice was age squared...
         if(age_choice == "age")
@@ -82,7 +84,7 @@ polygenicPTSD <- function(model,dframe,pop="eur"){
           mouts[[i]] <- tryCatch(
                          summary(vglm(as.formula(modelformula), family = modeltype2, data=dat_gen))@coef3 # , envir = .GlobalEnv # modeltype
                         ,error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
-                       # print(mouts[[i]])
+                        print(mouts[[i]])
           if (test_type == "*"){ #If this is an interaction test, also do the keller model that has cov x e (PTSD) interactions as well as cov x G (PRS)
           
             modelformula2 = paste(bp_outcome, "~  (P1 + P2 + P3 ", sex, "+ age",agevar, covars, ")*", ptsd, "+ (P1 + P2 + P3 ", sex, "+ age",agevar, covars, "+", ptsd,")*", prs, sep = "")
@@ -99,7 +101,10 @@ polygenicPTSD <- function(model,dframe,pop="eur"){
         }
         #Save model outputs as an R object
         save(mouts,file=paste(modelname,'r',sep='.'))
-        save(mouts_keller,file=paste(modelname,"keller",'r',sep='.'))
+        if (test_type == "*")
+        {
+         save(mouts_keller,file=paste(modelname,"keller",'r',sep='.'))
+        }
         }
        }
       }
