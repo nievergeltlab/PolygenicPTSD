@@ -81,14 +81,14 @@ polygenicPTSD <- function(model,dframe,pop="eur",covlist=""){
            modeltype2=multinomial(refLevel="0")
           } else { modeltype2=modeltype}
           mouts[[i]] <- tryCatch(
-                         summary(vglm(as.formula(modelformula), family = modeltype2, data=dat_gen))@coef3 # , envir = .GlobalEnv # modeltype
+                         summaryvglm(vglm(as.formula(modelformula), family = modeltype2, data=dat_gen))@coef3 # , envir = .GlobalEnv # modeltype
                         ,error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
                         print(mouts[[i]])
           if (test_type == "*"){ #If this is an interaction test, also do the keller model that has cov x e (PTSD) interactions as well as cov x G (PRS)
           
             modelformula2 = paste(bp_outcome, "~  (P1 + P2 + P3 ", sex, "+ age",agevar, covars, ")*", ptsd, "+ (P1 + P2 + P3 ", sex, "+ age",agevar, covars, "+", ptsd,")*", prs, sep = "")
                       mouts_keller[[i]] <- tryCatch(
-                         summary(vglm(as.formula(modelformula2), family = modeltype2, data=dat_gen))@coef3 # , envir = .GlobalEnv
+                         summaryvglm(vglm(as.formula(modelformula2), family = modeltype2, data=dat_gen))@coef3 # , envir = .GlobalEnv
                         ,error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
                        # print(mouts_keller[[i]])
           }               
