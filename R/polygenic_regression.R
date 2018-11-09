@@ -17,7 +17,7 @@ polygenicPTSD <- function(model,dframe,pop="eur"){
 
 #Loop runs through PRS variables within the correct subset specified above based on outcome
    for (ptsd in c(ptsd_vars)){ #Loop runs through PTSD variables
-    for (test_type in c("+", "*")){ #Loop runs through main effect/interaction
+    for (test_type in c("*","+")){ #Loop runs through main effect/interaction
      if (test_type == "+"){ #Define model name for file title (Main Effects model)
        effect = "ME"
      }
@@ -53,15 +53,23 @@ polygenicPTSD <- function(model,dframe,pop="eur"){
         if (covar == "adjust"){
           covars = "+ educ + trauma_count_lt"
         }
-
+       
+        #Make an age squared variable if the data choice was age squared...
+        if(age_choice == "age")
+        {
+         dat_gen$agesq <- dat_gen$age^2
+         agevar="+ agesq"
+        } else {agevar = "+1"}
+        
         if(dim(dat_gen)[1] > 0) #Only do a sex stratified analysis if the data frame has subjects to analyze 
         {
          modelname = paste(study, pop, gender, bp_outcome, prs_varname, ptsd, effect,  "age", age_choice,  "covar",covar, sep = ".") 
          mouts <- vector("list", length(prs_vars)+1)
-         
+         mouts_keller <- vector("list", length(prs_vars)+1)
          i=1
          for (prs in c(prs_vars)){ 
-          modelformula = paste(bp_outcome, "~  P1 + P2 + P3 ", sex, "+ age*",age_choice, "+","+" ,covars, "+", ptsd, test_type, prs, sep = "") #'antihtn' is taken out for now, its not used in any model directly
+         
+          modelformula = paste(bp_outcome, "~  P1 + P2 + P3 ", sex, "+ age",agevar, "+" ,covars, "+", ptsd, test_type, prs, sep = "") #'antihtn' is taken out for now, its not used in any model directly
 
           modeltype <- as.character(modeltype)
           print(modelformula)
@@ -69,14 +77,23 @@ polygenicPTSD <- function(model,dframe,pop="eur"){
           mouts[[i]] <- tryCatch(
                          summary(vglm(as.formula(modelformula), family = modeltype, data=dat_gen))@coef3 # , envir = .GlobalEnv
                         ,error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
+          if (test_type == "*"){ #If this is an interaction test, also do the keller model that has cov x e (PTSD) interactions as well as cov x G (PRS)
+          
+            modelformula2 = paste(bp_outcome, "~  (P1 + P2 + P3 ", sex, "+ age",agevar, covars, ")*", ptsd, "+ (P1 + P2 + P3 ", sex, "+ age",agevar, covars, "+", ptsd,")*", prs, sep = "")
+                      mouts_keller[[i]] <- tryCatch(
+                         summary(vglm(as.formula(modelformula2), family = modeltype, data=dat_gen))@coef3 # , envir = .GlobalEnv
+                        ,error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
+                        print(mouts_keller[[i]])
+          }               
                         
-          print(mouts[[i]])
+          
           i = i+1
          } 
           
         }
         #Save model outputs as an R object
         save(mouts,file=paste(modelname,'r',sep='.'))
+        save(mouts_keller,file=paste(modelname,"keller",'r',sep='.'))
         }
        }
       }
