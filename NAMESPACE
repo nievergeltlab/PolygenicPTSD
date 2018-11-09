@@ -5,4 +5,4 @@ export(find.PRS.cutoff)
 export(htn_outcome_classify)
 export(polygenicPTSD)
 export(variable.summary.stratified)
-export(polygenic_regression)
+
