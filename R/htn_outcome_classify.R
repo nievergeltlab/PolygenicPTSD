@@ -43,19 +43,21 @@
 htn_outcome_classify <- function(data_entry){
   merged_class <- mutate(data_entry,
                          htn_aha_old =
-                           as.factor(ifelse((SBP_meas<140 | DBP_meas<90) & antihtn_use !=1, 1,
-                                  ifelse(SBP_meas<120 & DBP_meas<80, 0,
-                                         ifelse(SBP_meas>=140 | DBP_meas>=90 | antihtn_use== 1, 2, NA)))),
+                           as.factor(ifelse((SBP_meas<120 & DBP_meas<80 & antihtn_use !=1), 0,
+                                     ifelse((SBP_meas<140 & DBP_meas<90 & antihtn_use !=1), 1,
+                                     ifelse(SBP_meas>=140 | DBP_meas>=90 | antihtn_use== 1, 2, NA)))),
+                                     
                          htn_aha_new =
-                           as.factor(ifelse(SBP_meas<130 & DBP_meas<80 & antihtn_use !=1, 1,
-                                  ifelse(SBP_meas<120 & DBP_meas<80, 0,
-                                         ifelse(SBP_meas>=130 | DBP_meas>=80 | antihtn_use==1, 2, NA)))),
+                           as.factor(ifelse((SBP_meas<120 & DBP_meas<80 & antihtn_use !=1), 0,
+                                     ifelse((SBP_meas<130 & DBP_meas<80 & antihtn_use !=1), 1,
+                                     ifelse(SBP_meas>=130 | DBP_meas>=80 | antihtn_use== 1, 2, NA)))),
+                                     
                          htn_aha_old_bi =
-                           as.factor(ifelse((SBP_meas<140 | DBP_meas<90) & antihtn_use != 1, 0,
-                                  ifelse(SBP_meas>=140 | DBP_meas>=90 | antihtn_use==1, 1, NA))),
+                           as.factor(ifelse(SBP_meas<140 & DBP_meas  <90 & antihtn_use != 1, 0,
+                                     ifelse(SBP_meas>=140 | DBP_meas>=90 | antihtn_use  ==1, 1, NA))),
                          htn_aha_new_bi =
-                           as.factor(ifelse(SBP_meas<130 & DBP_meas<80 & antihtn_use != 1, 0,
-                                  ifelse((SBP_meas>=130 | DBP_meas>=80) | antihtn_use==1, 1, NA))),
+                           as.factor(ifelse(SBP_meas <130 &  DBP_meas<80 & antihtn_use !=1, 0,
+                                     ifelse(SBP_meas>=130 | DBP_meas>=80 | antihtn_use ==1, 1, NA))),
                          SBP_meas_adj_15 =
                            ifelse(antihtn_use == 1, SBP_meas + 15,
                                   ifelse(antihtn_use == 0, SBP_meas, NA)),
@@ -70,6 +72,7 @@ htn_outcome_classify <- function(data_entry){
                                   ifelse(antihtn_use == 0, DBP_meas, NA)),
                          ancestry =
                            as.factor(ifelse(bestpop == "eur", 0,
-                                  ifelse(bestpop == "afr" | bestpop == "aam", 1, NA))))
+                         ifelse(bestpop == "afr" | bestpop == "aam", 1, NA))))
+
   return(merged_class)
 }
